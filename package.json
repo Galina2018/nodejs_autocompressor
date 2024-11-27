@@ -1,0 +1,7 @@
+{
+  "name": "autocompressor",
+  "version": "0.1.0",
+  "devDependencies": {
+    "zlib": "^1.0.5"
+  }
+}
