@@ -26,7 +26,7 @@ function compressFile(filePath) {
 }
 async function compressFilesInDirectory(dirPath) {
   try {
-    console.log('Сканирую папку', dirPath, '\n');
+    console.log('\nСканирую папку', dirPath);
     const files = await fsp.readdir(dirPath);
     for (const file of files) {
       const filePath = path.join(dirPath, file);
@@ -36,9 +36,18 @@ async function compressFilesInDirectory(dirPath) {
           console.log(`Найден файл: ${filePath}`);
           let gzExist = files.findIndex((fl) => fl === `${file}.gz`);
           if (gzExist >= 0) {
-            console.log('gz версия уже существует!\n');
+            // console.log('gz версия уже существует!\n');
+            const gzf = files[gzExist];
+            const stats_gz = await fsp.stat(path.join(dirPath, gzf));
+            if (new Date(stats_gz.mtime) - new Date(stats.mtime) > 0) {
+              console.log('gz версия уже существует и она не протухла!');
+            } else {
+              console.log('gz версия уже существует, но она протухла!');
+              await compressFile(filePath);
+              console.log('Файл сжат.\n');
+            }
           } else {
-            console.log('gz версии еще не существует!');
+            console.log('gz версии не существует!');
             await compressFile(filePath);
             console.log('Файл сжат.\n');
           }
